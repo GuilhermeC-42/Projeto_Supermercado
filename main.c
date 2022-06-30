@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 
 /* Estrutura Item que recebe(em ordem) nome, unidade de medida,
  * unidade de moeda, quantidade do item, valor unitário e o seu 
@@ -19,6 +20,16 @@ typedef struct{
   int numItens;
   double totalCat;
 }Categoria;
+
+/* Função que verifica se pagamento é parcelado ou não */
+bool verifica_pagamento_parcelado(char pagamento){
+  if(toupper(pagamento) == 'P'){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
 
 int main(void) { 
   int numCategoria, numeroParcelas, totalItens = 0;
@@ -59,7 +70,7 @@ int main(void) {
   totalPagamento = totalCompra - totalDesconto;
 
 // Disponibiliza o pagamento parcelado.
-  if(toupper(tipoPagamento) == 'P'){
+  if(verifica_pagamento_parcelado(tipoPagamento)){
     scanf("%s %lf", moeda, &minimoParcela);
     if(totalCompra < minimoParcela){
       tipoPagamento = 'A';
@@ -69,16 +80,26 @@ int main(void) {
   }
 
 // Saídas
-  int contItem = 0;
-  while(contItem < totalItens){
-  for(int i = 0; i < numCategoria; i++){
-      printf("%s\n", CatTotais[i].nomeCat);
-      for(int x = 0; x <  CatTotais[i].numItens; x++){
-        printf("* %s: %s %.2lf (%.1lf %s)\n", Itens[contItem].nomeItem, Itens[contItem].unimoeda, Itens[contItem].totalItem, Itens[contItem].qtdItems, Itens[contItem].uniMedida);   
-        ++contItem; 
-      }  
-      printf("** TOTAL %s: R$ %.2lf\n\n",CatTotais[i].nomeCat, CatTotais[i].totalCat);
-  }
+  int contItens = 0;
+  while(contItens < totalItens){
+    for(int contItem = 0; contItem < numCategoria; contItem++){
+        printf("%s\n", CatTotais[contItem].nomeCat);
+
+        for(int contItemMostrado = 0; contItemMostrado < CatTotais[contItem].numItens; contItemMostrado++){
+          printf("* %s: %s %.2lf (%.1lf %s)\n", 
+          Itens[contItens].nomeItem, 
+          Itens[contItens].unimoeda, 
+          Itens[contItens].totalItem, 
+          Itens[contItens].qtdItems, 
+          Itens[contItens].uniMedida);   
+          
+          ++contItens; 
+        }  
+        
+        printf("** TOTAL %s: R$ %.2lf\n\n",
+        CatTotais[contItem].nomeCat, 
+        CatTotais[contItem].totalCat);
+    }
   }
   printf("TOTAL DE ITENS: %d \n", totalItens);
   printf("VALOR TOTAL: R$ %.2lf\n", totalCompra);
@@ -87,7 +108,7 @@ int main(void) {
   printf("VALOR A PAGAR: R$ %.2lf", totalPagamento);
   
   // Aplica os dados extras para caso de pagamento parcelado.
-  if(toupper(tipoPagamento) == 'P'){
+  if(verifica_pagamento_parcelado(tipoPagamento)){
     printf("\nPARCELAS: %d\n", numeroParcelas);
     printf("VALOR DA PARCELA: R$ %.2lf\n", valorParcela);
   }
